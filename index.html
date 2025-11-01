@@ -1,0 +1,37 @@
+<!doctype html>
+<html>
+<head><meta charset="utf-8"><title>Crypto Liquidity Predictor</title></head>
+<body>
+  <h1>Crypto Liquidity Predictor</h1>
+  <div>
+    <label>Price: <input id="price" type="number" step="any" value="40000"></label><br>
+    <label>1h change (fraction): <input id="1h" type="number" step="any" value="0.02"></label><br>
+    <label>24h change (fraction): <input id="24h" type="number" step="any" value="0.03"></label><br>
+    <label>7d change (fraction): <input id="7d" type="number" step="any" value="0.05"></label><br>
+    <label>24h volume: <input id="24h_volume" type="number" step="any" value="3e10"></label><br>
+    <label>Market cap: <input id="mkt_cap" type="number" step="any" value="7e11"></label><br>
+    <button onclick="predict()">Predict Liquidity</button>
+  </div>
+  <h3 id="result"></h3>
+<script>
+async function predict(){
+  const payload = {
+    price: document.getElementById('price').value,
+    '1h': document.getElementById('1h').value,
+    '24h': document.getElementById('24h').value,
+    '7d': document.getElementById('7d').value,
+    '24h_volume': document.getElementById('24h_volume').value,
+    'mkt_cap': document.getElementById('mkt_cap').value
+  };
+  const res = await fetch('/api/predict', {
+    method: 'POST',
+    headers: {'Content-Type':'application/json'},
+    body: JSON.stringify(payload)
+  });
+  const data = await res.json();
+  if(data.error) document.getElementById('result').innerText = 'Error: '+data.error;
+  else document.getElementById('result').innerText = 'Predicted liquidity ratio: '+data.predicted_liquidity_ratio;
+}
+</script>
+</body>
+</html>
